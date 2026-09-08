@@ -1,0 +1,138 @@
+# ============================================================
+# Divine Beauty & Nails By Dee — Apache / LiteSpeed config
+# Hostinger shared hosting. Place in the same folder as index.html
+# (normally public_html). Static site: no build step, no backend.
+# ============================================================
+
+Options -Indexes -MultiViews
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # --- Force HTTPS -------------------------------------------------
+  # Enable only once Hostinger has issued the SSL certificate for the
+  # domain (hPanel > Security > SSL). Comment the next 3 lines out if
+  # the site is still on plain HTTP.
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+  # --- Canonical host ----------------------------------------------
+  # Pick ONE of the two blocks below and remove the leading "#".
+  # Strip www (https://example.com):
+  # RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  # RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+  # Or force www (https://www.example.com):
+  # RewriteCond %{HTTP_HOST} !^www\. [NC]
+  # RewriteCond %{HTTP_HOST} !^localhost [NC]
+  # RewriteRule ^ https://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+  # --- Pretty URL for the single page ------------------------------
+  # /index.html -> /
+  RewriteCond %{THE_REQUEST} \s/+index\.html[\s?] [NC]
+  RewriteRule ^index\.html$ / [R=301,L]
+</IfModule>
+
+# --- Custom error page ---------------------------------------------
+ErrorDocument 404 /404.html
+
+# --- Protect repository / project files ----------------------------
+# These ship with the repo but must never be served publicly.
+<FilesMatch "(^\.|\.(md|json|yml|yaml|lock|log|sh|bak|old|zip|tar|gz)$)">
+  Require all denied
+</FilesMatch>
+# ...except the files a browser or crawler legitimately requests.
+<FilesMatch "^(robots\.txt|sitemap\.xml|site\.webmanifest|manifest\.json)$">
+  Require all granted
+</FilesMatch>
+<IfModule mod_rewrite.c>
+  RewriteRule ^\.git(/|$) - [F,L]
+  RewriteRule ^node_modules(/|$) - [F,L]
+</IfModule>
+
+# --- MIME types ----------------------------------------------------
+<IfModule mod_mime.c>
+  AddType text/html                     .html
+  AddType text/css                      .css
+  AddType application/javascript        .js
+  AddType application/json              .json
+  AddType image/jpeg                    .jpg .jpeg
+  AddType image/png                     .png
+  AddType image/webp                    .webp
+  AddType image/svg+xml                 .svg
+  AddType image/x-icon                  .ico
+  AddType video/mp4                     .mp4
+  AddType audio/mp4                     .m4a
+  AddType font/woff                     .woff
+  AddType font/woff2                    .woff2
+  AddDefaultCharset UTF-8
+  AddCharset UTF-8 .html .css .js .json .xml .svg
+</IfModule>
+
+# --- Compression ---------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css
+  AddOutputFilterByType DEFLATE application/javascript application/x-javascript
+  AddOutputFilterByType DEFLATE application/json application/xml
+  AddOutputFilterByType DEFLATE image/svg+xml application/rss+xml
+  # Never re-compress already-compressed media.
+  SetEnvIfNoCase Request_URI \.(?:jpe?g|png|webp|gif|ico|mp4|m4a|woff2?)$ no-gzip dont-vary
+</IfModule>
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/xml text/css
+  AddOutputFilterByType BROTLI_COMPRESS application/javascript application/json
+  AddOutputFilterByType BROTLI_COMPRESS image/svg+xml
+</IfModule>
+
+# --- Browser caching -----------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault                          "access plus 1 month"
+  # HTML is the entry point: always revalidate so edits go live at once.
+  ExpiresByType text/html                 "access plus 0 seconds"
+  ExpiresByType text/css                  "access plus 1 year"
+  ExpiresByType application/javascript    "access plus 1 year"
+  ExpiresByType image/jpeg                "access plus 1 year"
+  ExpiresByType image/png                 "access plus 1 year"
+  ExpiresByType image/webp                "access plus 1 year"
+  ExpiresByType image/svg+xml             "access plus 1 year"
+  ExpiresByType image/x-icon              "access plus 1 year"
+  ExpiresByType video/mp4                 "access plus 1 year"
+  ExpiresByType font/woff2                "access plus 1 year"
+  ExpiresByType text/plain                "access plus 1 day"
+  ExpiresByType application/xml           "access plus 1 day"
+</IfModule>
+
+<IfModule mod_headers.c>
+  # style.css / header.css / app.js are NOT content-hashed: revalidate
+  # them so a redeploy is picked up instead of serving a stale cache.
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+  # Hashed and immutable media can be cached hard.
+  <FilesMatch "\.(jpg|jpeg|png|webp|gif|ico|svg|mp4|woff2?)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+
+  # --- Security headers --------------------------------------------
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), interest-cohort=()"
+  # HSTS: uncomment only after HTTPS is confirmed working on the domain.
+  # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header unset X-Powered-By
+  Header always unset X-Powered-By
+</IfModule>
+
+# --- Range requests (video seeking) --------------------------------
+<IfModule mod_headers.c>
+  <FilesMatch "\.mp4$">
+    Header set Accept-Ranges "bytes"
+  </FilesMatch>
+</IfModule>

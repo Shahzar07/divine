@@ -1,0 +1,35 @@
+{
+  "name": "divine-beauty-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Divine Beauty & Nails By Dee — static editorial website (HTML, CSS, vanilla JS). No build step; deploys as-is to Hostinger shared hosting.",
+  "homepage": "https://github.com/shahzar07/divine",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shahzar07/divine.git"
+  },
+  "license": "UNLICENSED",
+  "keywords": [
+    "static-site",
+    "beauty-salon",
+    "nails",
+    "hostinger",
+    "html",
+    "css",
+    "vanilla-js"
+  ],
+  "browserslist": [
+    "defaults",
+    "not dead"
+  ],
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "python3 -m http.server 3000",
+    "serve": "npx --yes serve . --listen 3000",
+    "build": "node -e \"console.log('No build step: this site is plain HTML/CSS/JS and is deployed exactly as it sits in the repository.')\"",
+    "check": "node --check app.js && node -e \"const fs=require('fs');['index.html','style.css','header.css','app.js','.htaccess','assets/logo.png'].forEach(f=>{if(!fs.existsSync(f))throw new Error('missing required file: '+f)});console.log('All required files present; app.js parses.')\"",
+    "zip": "rm -f divine-beauty-website.zip && zip -r divine-beauty-website.zip . -x '.git/*' '*.zip' 'node_modules/*' '.DS_Store'"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

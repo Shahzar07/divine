@@ -1,0 +1,157 @@
+/* Header owns its layout and menu control, independently of gallery buttons. */
+.announcement {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0 .5em;
+  min-height: 30px;
+  padding: 6px 20px;
+  background: #c8aa70;
+  color: #28251c;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: .17em;
+  text-align: center;
+}
+.header {
+  position: relative;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 250px minmax(0, 1fr);
+  grid-template-areas: 'navigation brand booking';
+  align-items: center;
+  gap: 32px;
+  min-height: 96px;
+  padding: 12px var(--gutter);
+  background: var(--paper);
+  color: #29291f;
+  border-bottom: 1px solid #d8ceb8;
+}
+.header nav {
+  grid-area: navigation;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: clamp(18px, 2vw, 30px);
+}
+.header nav a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: nowrap;
+  transition: color 180ms ease-out;
+}
+.header nav a::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 7px;
+  left: 0;
+  height: 1px;
+  background: #8b703e;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 180ms ease-out;
+}
+.header nav a:hover { color: #80632d; }
+.header nav a:hover::after, .header nav a:focus-visible::after { transform: scaleX(1); }
+.header .brand { grid-area: brand; justify-self: center; width: 250px; max-width: 100%; }
+.header .brand img { width: 100%; height: auto; mix-blend-mode: multiply; }
+.header .nav-book {
+  grid-area: booking;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  min-height: 48px;
+  padding: 13px 22px;
+  border: 1px solid #29291f;
+  background: #29291f;
+  color: #f5f0e5;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: nowrap;
+  transition: background 180ms ease-out, border-color 180ms ease-out;
+}
+.header .nav-book:hover { background: #454133; border-color: #454133; }
+.header .booking-arrow { color: #d8bd85; font-size: 18px; line-height: 1; }
+.header .booking-short { display: none; }
+.header .menu-toggle { display: none; }
+@media (min-width: 961px) and (max-width: 1150px) {
+  .header { grid-template-columns: minmax(0, 1fr) 210px minmax(0, 1fr); gap: 24px; padding-inline: 32px; }
+  .header nav { gap: 18px; }
+  .header nav a { font-size: 13px; }
+  .header .nav-book { font-size: 13px; gap: 14px; padding-inline: 17px; }
+}
+@media (max-width: 960px) {
+  .header {
+    grid-template-columns: minmax(0, 1fr) 220px minmax(0, 1fr);
+    grid-template-areas: 'menu brand booking';
+    min-height: 84px;
+    padding: 10px 28px;
+    gap: 20px;
+  }
+  .header .menu-toggle {
+    grid-area: menu;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    border: 0;
+    background: transparent;
+    justify-self: start;
+  }
+  .header .menu-toggle span {
+    display: block;
+    width: 23px;
+    height: 1px;
+    background: #29291f;
+    transition: transform 180ms ease-out;
+  }
+  .header .menu-toggle[aria-expanded=true] span:first-child { transform: translateY(3.5px) rotate(45deg); }
+  .header .menu-toggle[aria-expanded=true] span:last-child { transform: translateY(-3.5px) rotate(-45deg); }
+  .header nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    grid-area: auto;
+    padding: 18px 28px 22px;
+    background: var(--paper);
+    border-top: 1px solid #ded6c7;
+    border-bottom: 1px solid #c8b992;
+    box-shadow: 0 16px 24px #17171312;
+  }
+  .header nav.open { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+  .header nav a { font-size: 16px; padding: 10px 0; }
+  .header nav a::after { display: none; }
+  .header .nav-book { min-height: 44px; padding: 10px 16px; gap: 12px; }
+  .header .booking-label { display: none; }
+  .header .booking-short { display: inline; }
+}
+@media (max-width: 560px) {
+  .announcement { min-height: 28px; padding: 6px 12px; font-size: 9px; letter-spacing: .09em; }
+  .header {
+    grid-template-columns: 56px minmax(0, 1fr) 56px;
+    min-height: 78px;
+    gap: 12px;
+    padding: 10px 20px;
+  }
+  .header .brand { width: 190px; }
+  .header .nav-book { width: 56px; padding: 10px 8px; font-size: 13px; }
+  .header .booking-arrow { display: none; }
+  .header nav { padding-inline: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .header nav a, .header nav a::after, .header .nav-book, .header .menu-toggle span { transition: none; }
+}

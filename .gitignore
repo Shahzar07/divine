@@ -1,0 +1,16 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Tooling
+node_modules/
+npm-debug.log*
+.npm/
+
+# Local editor state
+.vscode/
+.idea/
+
+# Deployment archives produced by `npm run zip`
+*.zip
+*.tar.gz
