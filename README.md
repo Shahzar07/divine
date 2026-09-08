@@ -14,7 +14,7 @@ What is in this repository is exactly what gets served.
 ├── 404.html                # Styled not-found page (wired up in .htaccess)
 ├── style.css               # Main stylesheet
 ├── header.css              # Header / navigation styles
-├── app.js                  # Interactions: menu, lookbook, films, enquiry form
+├── site.js                 # Interactions: menu, lookbook, films, enquiry form
 ├── .htaccess               # Apache / LiteSpeed config for Hostinger
 ├── package.json            # Local preview + helper scripts (not needed to deploy)
 ├── robots.txt              # Crawler rules  ← set your real domain
@@ -40,38 +40,49 @@ root, a subdomain, or a subfolder without any changes.
 The site must end up with `index.html` and `.htaccess` **directly inside
 `public_html`** (or inside the subfolder assigned to the domain/subdomain).
 
-### Option A — Git deployment (recommended)
+> ### ⚠️ Deploy this as a **static site**, never as a Node.js app
+>
+> Hostinger inspects a deployment for `package.json`. If it finds one it
+> configures the site as a **Node.js (Passenger) application** and boots the
+> file named in its build settings — by default `app.js`. This site has no
+> server: the front-end script would be executed by Node, crash on the first
+> browser API (`ReferenceError: matchMedia is not defined`), and every request
+> would return **503 Service Unavailable**.
+>
+> Two safeguards are in place:
+> - the browser script is named **`site.js`**, not `app.js`, so it can never be
+>   picked up as a Passenger entry file;
+> - `package.json` is **excluded from the deployment payload** (see
+>   `npm run zip` below). It stays in the repository for local development only.
+>
+> If you set up Git auto-deployment, keep `package.json` off the deployed
+> branch, or Hostinger will switch the site back to Node.js mode.
 
-1. hPanel → **Websites → Dashboard → Advanced → GIT**.
-2. **Repository:** `https://github.com/shahzar07/divine.git`
-   **Branch:** the branch holding this code
-   **Directory:** leave blank to deploy into `public_html`.
-3. Click **Create**, then **Deploy** (or copy the webhook URL into the GitHub
-   repo under *Settings → Webhooks* for auto-deploy on every push).
-
-Because the site lives at the repository root, Hostinger's clone lands in the
-right place with no build or post-deploy command.
-
-### Option B — File Manager upload
+### Option A — Static deploy (recommended)
 
 ```bash
-npm run zip     # produces divine-beauty-website.zip
+npm run zip     # divine-beauty-website.zip — site files only, no package.json
 ```
 
-hPanel → **File Manager** → open `public_html` → **Upload** the zip →
-right-click → **Extract**. Confirm `index.html` and `.htaccess` sit at the top
-level of `public_html`, not inside a nested folder.
+hPanel → **Websites → Dashboard → File Manager** → open `public_html` →
+delete anything already there → **Upload** the zip → right-click → **Extract**.
+Confirm `index.html` and `.htaccess` sit at the top level of `public_html`,
+not inside a nested folder.
+
+Equivalently, via the Hostinger API: upload the archive, then call
+*Deploy static site archive* for the domain — this rewrites `public_html`
+and replaces any Passenger `.htaccess` left over from a Node.js setup.
+
+### Option B — FTP / SFTP
+
+Upload the contents of the zip (or the repository minus `package.json`, `.git/`
+and the `*.md` docs) into `public_html`, keeping the folder structure intact.
 
 > **Hidden files:** File Manager and most FTP clients hide dotfiles by default.
 > In File Manager use *Settings → Show hidden files* so `.htaccess` is visible;
 > in FileZilla use *Server → Force showing hidden files*. If `.htaccess` is
 > missing the site still loads, but compression, caching, the 404 page and the
 > security headers will not apply.
-
-### Option C — FTP / SFTP
-
-Upload the full contents of the repository (excluding `.git/`) into
-`public_html`, keeping the folder structure intact.
 
 ---
 
@@ -86,7 +97,7 @@ Upload the full contents of the repository (excluding `.git/`) into
    *force www* block (not both) so the site answers on one address.
 3. **Domain references.** Replace `divinebeautybydee.com` in `robots.txt` and
    `sitemap.xml` with the live domain.
-4. **Contact details.** `index.html` and `app.js` use
+4. **Contact details.** `index.html` and `site.js` use
    `hello@divinebeautybydee.com` and list *Manchester, UK · Tue–Sat 9:00–19:00*.
    Confirm both are correct before launch (see `DELIVERY.md`).
 5. **Verify.** Load the site and check: logo and hero images appear, the two
@@ -109,7 +120,7 @@ appointment is ever auto-confirmed.
 npm run dev     # http://localhost:3000  (python3 http.server)
 # or
 npm run serve   # same, via `npx serve`
-npm run check   # verifies required files exist and app.js parses
+npm run check   # verifies required files exist and site.js parses
 ```
 
 Opening `index.html` straight from the filesystem mostly works, but serve it

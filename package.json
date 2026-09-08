@@ -27,8 +27,8 @@
     "dev": "python3 -m http.server 3000",
     "serve": "npx --yes serve . --listen 3000",
     "build": "node -e \"console.log('No build step: this site is plain HTML/CSS/JS and is deployed exactly as it sits in the repository.')\"",
-    "check": "node --check app.js && node -e \"const fs=require('fs');['index.html','style.css','header.css','app.js','.htaccess','assets/logo.png'].forEach(f=>{if(!fs.existsSync(f))throw new Error('missing required file: '+f)});console.log('All required files present; app.js parses.')\"",
-    "zip": "rm -f divine-beauty-website.zip && zip -r divine-beauty-website.zip . -x '.git/*' '*.zip' 'node_modules/*' '.DS_Store'"
+    "check": "node --check site.js && node -e \"const fs=require('fs');['index.html','style.css','header.css','site.js','.htaccess','assets/logo.png'].forEach(f=>{if(!fs.existsSync(f))throw new Error('missing required file: '+f)});console.log('All required files present; site.js parses.')\"",
+    "zip": "rm -f divine-beauty-website.zip && zip -r -q divine-beauty-website.zip .htaccess index.html 404.html style.css header.css site.js assets robots.txt sitemap.xml && echo 'divine-beauty-website.zip ready (site files only - package.json and docs intentionally excluded)'"
   },
   "dependencies": {},
   "devDependencies": {}
