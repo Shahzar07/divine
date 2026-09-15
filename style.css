@@ -998,6 +998,17 @@ p { text-wrap: pretty; }
   line-height: 1;
   color: #c8a44b3d;
 }
+.quotes-invite {
+  max-width: 46ch;
+  margin: clamp(28px, 3vw, 40px) auto 0;
+  padding-top: clamp(24px, 3vw, 32px);
+  border-top: 1px solid var(--hairline);
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+.quotes-invite a { color: var(--gold-lite); border-bottom: 1px solid #ecd9a355; }
+.quotes-invite a:hover { color: var(--gold); border-color: var(--gold); }
 .quotes-nav {
   display: flex;
   align-items: center;
