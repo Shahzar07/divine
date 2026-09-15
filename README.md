@@ -62,25 +62,31 @@ Replace them with real, attributed client reviews before launch.
 The site must end up with `index.html` and `.htaccess` **directly inside
 `public_html`** (or inside the subfolder assigned to the domain/subdomain).
 
-> ### ⚠️ This repository must never look like a Node.js app
+> ### ⚠️ How this site actually deploys
 >
-> Deployment pipelines — Hostinger's Git deploy included — inspect a repository
-> for `package.json`. If they find one they classify the site as a **Node.js
-> application** and look for an entry file, by default `app.js`. This site has
-> no server and no build step, so that classification only ever breaks it:
+> Hostinger has this website registered as a **Node.js application**, and that
+> setting lives on the website, not in this repository. Its build pipeline runs
+> on every Git auto-deployment no matter what the code looks like, which caused
+> three failures in a row:
 >
-> - with an `app.js` present, the entry script was executed by Node and died on
->   the first browser API (`ReferenceError: matchMedia is not defined`), so
->   nothing listened and every request returned **503**;
-> - once `app.js` was renamed to `site.js` to stop that, the pipeline had no
->   entry file to build and the deployment failed outright with **Build failed**.
+> | Repo state | Outcome |
+> |---|---|
+> | `app.js` + `package.json` | built, then **503** — Node executed the browser script (`ReferenceError: matchMedia is not defined`) |
+> | `app.js` renamed to `site.js` | **Build failed** — no entry file |
+> | `package.json` removed | **Build failed** — `ERROR: package.json file not found` |
 >
-> Both failures had the same root cause, so `package.json` has been removed.
-> The local helper scripts now live in `dev.sh`, which no tooling treats as an
-> application manifest. The browser script is named `site.js`, never `app.js`.
+> The repository was never the switch. The fix is to give that pipeline
+> something correct to do:
 >
-> **Do not reintroduce `package.json` at the repository root.** If you need npm
-> for local work, keep it in an untracked file or a subdirectory.
+> - `package.json` declares one script, `build`, with **no dependencies**;
+> - `build.js` copies the site into `dist/` and changes nothing;
+> - Hostinger's build settings are `app_type: vite`, `root_directory: .`,
+>   `output_directory: dist`, `build_script: build`, so it publishes `dist/`
+>   as static files and never boots an entry file.
+>
+> **Do not add a dependency or an `app.js`.** There is nothing to compile here;
+> `npm run build` is a copy. If you ever move off Hostinger's Git deployment,
+> `./dev.sh zip` still produces the same files for a manual upload.
 
 ### Option A — Static deploy (recommended)
 
