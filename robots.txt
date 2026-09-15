@@ -1,6 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /scrollcraft/
 
 # Replace the host below with the live domain before launch.
 Sitemap: https://divinebeautybydee.com/sitemap.xml
