@@ -18,7 +18,7 @@ What is in this repository is exactly what gets served.
 ├── header.css              # Announcement bar, header, navigation, footer
 ├── site.js                 # Navigation, carousels, films, filters, lightbox, enquiry form
 ├── .htaccess               # Apache / LiteSpeed config for Hostinger
-├── package.json            # Local preview + helper scripts (not needed to deploy)
+├── dev.sh                  # Local preview + helper scripts (not needed to deploy)
 ├── robots.txt              # Crawler rules  ← set your real domain
 ├── sitemap.xml             # Sitemap        ← set your real domain
 ├── assets/
@@ -62,28 +62,30 @@ Replace them with real, attributed client reviews before launch.
 The site must end up with `index.html` and `.htaccess` **directly inside
 `public_html`** (or inside the subfolder assigned to the domain/subdomain).
 
-> ### ⚠️ Deploy this as a **static site**, never as a Node.js app
+> ### ⚠️ This repository must never look like a Node.js app
 >
-> Hostinger inspects a deployment for `package.json`. If it finds one it
-> configures the site as a **Node.js (Passenger) application** and boots the
-> file named in its build settings — by default `app.js`. This site has no
-> server: the front-end script would be executed by Node, crash on the first
-> browser API (`ReferenceError: matchMedia is not defined`), and every request
-> would return **503 Service Unavailable**.
+> Deployment pipelines — Hostinger's Git deploy included — inspect a repository
+> for `package.json`. If they find one they classify the site as a **Node.js
+> application** and look for an entry file, by default `app.js`. This site has
+> no server and no build step, so that classification only ever breaks it:
 >
-> Two safeguards are in place:
-> - the browser script is named **`site.js`**, not `app.js`, so it can never be
->   picked up as a Passenger entry file;
-> - `package.json` is **excluded from the deployment payload** (see
->   `npm run zip` below). It stays in the repository for local development only.
+> - with an `app.js` present, the entry script was executed by Node and died on
+>   the first browser API (`ReferenceError: matchMedia is not defined`), so
+>   nothing listened and every request returned **503**;
+> - once `app.js` was renamed to `site.js` to stop that, the pipeline had no
+>   entry file to build and the deployment failed outright with **Build failed**.
 >
-> If you set up Git auto-deployment, keep `package.json` off the deployed
-> branch, or Hostinger will switch the site back to Node.js mode.
+> Both failures had the same root cause, so `package.json` has been removed.
+> The local helper scripts now live in `dev.sh`, which no tooling treats as an
+> application manifest. The browser script is named `site.js`, never `app.js`.
+>
+> **Do not reintroduce `package.json` at the repository root.** If you need npm
+> for local work, keep it in an untracked file or a subdirectory.
 
 ### Option A — Static deploy (recommended)
 
 ```bash
-npm run zip     # divine-beauty-website.zip — site files only, no package.json
+./dev.sh zip    # divine-beauty-website.zip — site files only
 ```
 
 hPanel → **Websites → Dashboard → File Manager** → open `public_html` →
@@ -93,8 +95,8 @@ not inside a nested folder.
 
 ### Option B — FTP / SFTP
 
-Upload the contents of the zip (or the repository minus `package.json`, `.git/`
-and the `*.md` docs) into `public_html`, keeping the folder structure intact.
+Upload the contents of the zip (or the repository minus `dev.sh`, `.git/` and
+the `*.md` docs) into `public_html`, keeping the folder structure intact.
 
 > **Hidden files:** File Manager and most FTP clients hide dotfiles by default.
 > In File Manager use *Settings → Show hidden files* so `.htaccess` is visible;
@@ -137,10 +139,9 @@ work is quoted in the enquiry.
 ## Local preview
 
 ```bash
-npm run dev     # http://localhost:3000  (python3 http.server)
-# or
-npm run serve   # same, via `npx serve`
-npm run check   # verifies required files exist and site.js parses
+./dev.sh serve   # http://localhost:3000  (python3 http.server)
+./dev.sh check   # verifies required files exist and site.js parses
+./dev.sh zip     # packages the site for a manual upload
 ```
 
 Opening the HTML straight from the filesystem mostly works, but serve it over
