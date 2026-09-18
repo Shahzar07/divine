@@ -44,7 +44,7 @@ class Hero extends Divine_Widget {
 		$this->add_heading_controls(
 			__( 'Divine Beauty & Nails By Dee', 'divine-beauty' ),
 			__( 'Beauty, in<br>every <em>detail.</em>', 'divine-beauty' ),
-			__( 'Massage, cupping, makeup, nails and facials — in a calm private studio where every treatment starts with you.', 'divine-beauty' )
+			__( 'Facials, massage, body contouring, nails and glam — in a calm private studio where every treatment starts with you.', 'divine-beauty' )
 		);
 
 		$this->add_button_controls(
@@ -63,7 +63,7 @@ class Hero extends Divine_Widget {
 			array(
 				'label'   => __( 'Figure', 'divine-beauty' ),
 				'type'    => Controls_Manager::TEXT,
-				'default' => '9',
+				'default' => '17',
 			)
 		);
 		$stat->add_control(
@@ -71,7 +71,7 @@ class Hero extends Divine_Widget {
 			array(
 				'label'   => __( 'Label', 'divine-beauty' ),
 				'type'    => Controls_Manager::TEXT,
-				'default' => __( 'Signature treatments', 'divine-beauty' ),
+				'default' => __( 'Treatments offered', 'divine-beauty' ),
 			)
 		);
 
@@ -84,8 +84,8 @@ class Hero extends Divine_Widget {
 				'title_field' => '{{{ value }}} — {{{ label }}}',
 				'default'     => array(
 					array(
-						'value' => '9',
-						'label' => __( 'Signature treatments', 'divine-beauty' ),
+						'value' => '17',
+						'label' => __( 'Treatments offered', 'divine-beauty' ),
 					),
 					array(
 						'value' => '1:1',

@@ -20,3 +20,7 @@ dist/
 
 # Packaged WordPress theme (rebuild with wordpress/build-theme.sh)
 wordpress/divine-beauty.zip
+
+# Python bytecode from the generators
+__pycache__/
+*.pyc

@@ -27,7 +27,7 @@ class Customizer {
 	private const FIELDS = array(
 		'phone'            => array( 'default' => '07838 063271', 'label' => 'Phone number', 'sanitize' => 'sanitize_text_field', 'type' => 'text' ),
 		'email'            => array( 'default' => 'hello@divinebeautybydee.com', 'label' => 'Enquiry email', 'sanitize' => 'sanitize_email', 'type' => 'email' ),
-		'address'          => array( 'default' => 'Manchester, United Kingdom', 'label' => 'Address', 'sanitize' => 'sanitize_textarea_field', 'type' => 'textarea' ),
+		'address'          => array( 'default' => 'Hazel Grove, Stockport', 'label' => 'Address', 'sanitize' => 'sanitize_textarea_field', 'type' => 'textarea' ),
 		'hours'            => array( 'default' => "Tuesday – Saturday · 9:00 – 19:00\nSunday & Monday · Closed", 'label' => 'Opening hours', 'sanitize' => 'sanitize_textarea_field', 'type' => 'textarea' ),
 		'instagram_url'    => array( 'default' => '', 'label' => 'Instagram URL', 'sanitize' => 'esc_url_raw', 'type' => 'url' ),
 		'facebook_url'     => array( 'default' => '', 'label' => 'Facebook URL', 'sanitize' => 'esc_url_raw', 'type' => 'url' ),

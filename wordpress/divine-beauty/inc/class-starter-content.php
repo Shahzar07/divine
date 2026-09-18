@@ -242,11 +242,11 @@ class Starter_Content {
 		$img = static fn( string $file ): array => array( 'url' => DIVINE_URI . '/assets/images/' . $file );
 
 		$bands = array(
-			array( '01', 'Nails', 'Shaped to you.<br><em>Sealed to last.</em>', 'band-nails.jpg', '', '2–3', 'wks', 'Typical wear' ),
-			array( '02', 'Massage', 'Relax. Refresh.<br><em>Rejuvenate.</em>', 'band-massage.jpg', 'yes', '60', 'min', 'Typical session' ),
-			array( '03', 'Cupping therapy', 'Old practice.<br><em>Real release.</em>', 'band-cupping.jpg', '', '10', '', 'Cups placed' ),
-			array( '04', 'Makeup & glam', 'Skin first.<br><em>Then the drama.</em>', 'band-makeup.jpg', 'yes', '', '', '' ),
-			array( '05', 'Facials & skin', 'Calm skin.<br><em>Lit from within.</em>', 'band-facials.jpg', '', '', '', '' ),
+			array( '01', 'Facials & skin', 'Six facials.<br><em>One skin — yours.</em>', 'band-facials.jpg', '', '6', '', 'Facials offered' ),
+			array( '02', 'Massage & body', 'Five ways<br><em>to unwind.</em>', 'svc-swedish.jpg', 'yes', '5', '', 'Massage treatments' ),
+			array( '03', 'Body contouring', 'Sculpted<br><em>by hand.</em>', 'work-contouring-waist.jpg', '', '0', '', 'Machines used' ),
+			array( '04', 'Nails', 'Shaped to you.<br><em>Sealed to last.</em>', 'band-nails.jpg', 'yes', '2–3', 'wks', 'Typical wear' ),
+			array( '05', 'Makeup & glam', 'Skin first.<br><em>Then the drama.</em>', 'band-makeup.jpg', '', '', '', '' ),
 		);
 
 		$widgets = array(
@@ -307,7 +307,7 @@ class Starter_Content {
 						'crumb'   => __( 'Services', 'divine-beauty' ),
 						'eyebrow' => __( 'The menu', 'divine-beauty' ),
 						'heading' => __( 'Every treatment,<br><em>in full.</em>', 'divine-beauty' ),
-						'lede'    => __( 'Nine treatments across body, skin, nails and glam — what each one involves, and what it is actually for.', 'divine-beauty' ),
+						'lede'    => __( 'Seventeen treatments across skin, body, nails and glam — what each one involves, and what it is actually for.', 'divine-beauty' ),
 					),
 				),
 				array( 'divine-service-list', array() ),

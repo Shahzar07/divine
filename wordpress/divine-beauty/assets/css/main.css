@@ -642,6 +642,45 @@ p { text-wrap: pretty; }
   gap: clamp(18px, 2.2vw, 30px);
 }
 .card-grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.card-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 1040px) { .card-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 620px)  { .card-grid-3 { grid-template-columns: 1fr; } }
+
+/* The treatment cards on the Services page carry their benefits and their own
+   booking link, so the menu can be read without opening anything. */
+.s-card-benefits {
+  margin: 0 0 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--hairline);
+}
+.s-card-benefits dt {
+  margin-bottom: 9px;
+  color: var(--gold);
+  font-family: var(--font-ui);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.s-card-benefits dd {
+  position: relative;
+  margin: 0 0 6px;
+  padding-left: 16px;
+  color: var(--cream);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+.s-card-benefits dd::before {
+  content: '';
+  position: absolute;
+  top: .62em;
+  left: 0;
+  width: 7px;
+  height: 1px;
+  background: var(--gold-deep);
+}
+.on-paper .s-card-benefits dd { color: var(--paper-ink); }
+.s-card-body .btn { margin-top: auto; align-self: flex-start; }
 @media (max-width: 1040px) { .card-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px)  { .card-grid-4 { grid-template-columns: 1fr; } }
 

@@ -23,7 +23,6 @@ class Theme_Setup {
 	 */
 	public function __construct() {
 		add_action( 'after_setup_theme', array( $this, 'setup' ) );
-		add_action( 'widgets_init', array( $this, 'register_sidebars' ) );
 		add_filter( 'body_class', array( $this, 'body_class' ) );
 		add_filter( 'nav_menu_link_attributes', array( $this, 'nav_link_class' ), 10, 3 );
 	}
@@ -68,25 +67,6 @@ class Theme_Setup {
 		add_image_size( 'divine-portrait', 900, 1200, true );
 		add_image_size( 'divine-card', 800, 1000, true );
 		add_image_size( 'divine-square', 860, 860, true );
-	}
-
-	/**
-	 * Register the footer widget area.
-	 *
-	 * @return void
-	 */
-	public function register_sidebars(): void {
-		register_sidebar(
-			array(
-				'name'          => __( 'Footer extras', 'divine-beauty' ),
-				'id'            => 'footer-extras',
-				'description'   => __( 'Optional widgets shown in the footer, beside the studio details.', 'divine-beauty' ),
-				'before_widget' => '<section id="%1$s" class="footer-col widget %2$s">',
-				'after_widget'  => '</section>',
-				'before_title'  => '<h3>',
-				'after_title'   => '</h3>',
-			)
-		);
 	}
 
 	/**

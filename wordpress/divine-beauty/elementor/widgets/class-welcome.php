@@ -124,7 +124,7 @@ class Welcome extends Divine_Widget {
 			array(
 				'label'   => __( 'Describe the main image', 'divine-beauty' ),
 				'type'    => Controls_Manager::TEXT,
-				'default' => __( 'A calm, prepared treatment room with folded towels and a lit candle', 'divine-beauty' ),
+				'default' => __( 'Dee carrying out a facial treatment at the studio', 'divine-beauty' ),
 			)
 		);
 		$this->add_control(
@@ -154,7 +154,7 @@ class Welcome extends Divine_Widget {
 			<div class="wrap welcome-inner">
 				<div class="welcome-media">
 					<div class="frame frame--gold ratio-portrait">
-						<?php $this->image( (array) $s['main_image'], (string) $s['main_alt'], 'studio-room.jpg', 980, 1225 ); ?>
+						<?php $this->image( (array) $s['main_image'], (string) $s['main_alt'], 'studio-dee.jpg', 980, 1225 ); ?>
 					</div>
 					<?php if ( ! empty( $s['inset_image']['url'] ) || ! empty( $s['inset_alt'] ) ) : ?>
 						<span class="welcome-still">

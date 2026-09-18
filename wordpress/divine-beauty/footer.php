@@ -95,9 +95,6 @@ $divine_networks = array_filter(
 			<p class="footer-hours"><?php echo nl2br( esc_html( Customizer::get( 'hours' ) ) ); ?></p>
 		</div>
 
-		<?php if ( is_active_sidebar( 'footer-extras' ) ) : ?>
-			<?php dynamic_sidebar( 'footer-extras' ); ?>
-		<?php endif; ?>
 	</div>
 
 	<div class="footer-bar">

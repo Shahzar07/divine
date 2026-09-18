@@ -132,32 +132,32 @@ class Service_Carousel extends Divine_Widget {
 	}
 
 	/**
-	 * The studio's nine treatments, so the widget is useful the moment it is dropped in.
+	 * The treatments flagged as highlights, so the rail is useful immediately.
 	 *
 	 * @return array<int,array<string,mixed>>
 	 */
 	private function default_items(): array {
-		$rows = array(
-			array( 'Massage', 'svc-massage.jpg', 'Head, Back & shoulder, Full body', 'Slow, deliberate pressure that eases tension through the scalp, neck, shoulders and back.' ),
-			array( 'Cupping Therapy', 'svc-cupping.jpg', 'Dry cupping, Back & shoulders', 'Traditional suction cups placed along the back to draw up tight tissue.' ),
-			array( 'Makeup & Glam', 'svc-makeup.jpg', 'Soft glam, Occasion, Bridal', 'Luminous skin, a clean wing and lashes that suit your eye shape.' ),
-			array( 'Facials & Skin', 'svc-facials.jpg', 'Deep cleanse, Cooling globes', 'Cleanse, exfoliate and mask, finished with cooling globes to calm and de-puff.' ),
-			array( 'Gel Nails', 'svc-gel-nails.jpg', 'High shine, Long wear', 'A smooth, glass-like gel finish in the colour you have been saving a photo of.' ),
-			array( 'Nail Extensions', 'svc-extensions.jpg', 'Acrylic, Builder gel', 'Sculpted extensions in your preferred length and shape, balanced to your own nail.' ),
-			array( 'Nail Art & Detail', 'svc-nail-art.jpg', 'Hand-painted, Chrome, Foil', 'Fine hand-painted lines, gold foil, chrome or a scatter of crystals.' ),
-			array( 'Manicure & Pedicure', 'svc-mani-pedi.jpg', 'Shaping, Hard-skin care', 'Classic shaping, cuticle work and a flawless polish, with a warm massage to finish.' ),
-			array( 'Brow & Lash Finish', 'svc-brows.jpg', 'Mapping, Tint', 'Brows mapped to your features and shaped, with lashes chosen to match.' ),
-		);
-
 		$items = array();
-		foreach ( $rows as $row ) {
+
+		foreach ( divine_treatments() as $t ) {
+			if ( empty( $t['featured'] ) ) {
+				continue;
+			}
+
+			$benefits = array_filter( array_map( 'trim', explode( "\n", (string) $t['benefits'] ) ) );
+			$sentence = explode( '. ', (string) $t['text'] )[0];
+
 			$items[] = array(
-				'title' => $row[0],
-				'image' => array( 'url' => DIVINE_URI . '/assets/images/' . $row[1] ),
-				'alt'   => $row[0],
-				'tags'  => $row[2],
-				'text'  => $row[3],
-				'link'  => array( 'url' => '' ),
+				'title' => $t['name'],
+				'image' => array( 'url' => DIVINE_URI . '/assets/images/' . $t['image'] ),
+				'alt'   => $t['alt'],
+				// The first words of the first two benefits make natural tags.
+				'tags'  => implode( ', ', array_map(
+					static fn( string $b ): string => trim( explode( '—', $b )[0] ),
+					array_slice( $benefits, 0, 2 )
+				) ),
+				'text'  => rtrim( $sentence, '.' ) . '.',
+				'link'  => array( 'url' => '/services/#' . $t['slug'] ),
 			);
 		}
 

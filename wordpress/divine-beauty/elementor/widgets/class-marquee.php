@@ -45,7 +45,7 @@ class Marquee extends Divine_Widget {
 				'label'       => __( 'Treatments', 'divine-beauty' ),
 				'type'        => Controls_Manager::TEXTAREA,
 				'rows'        => 5,
-				'default'     => "Massage\nCupping therapy\nMakeup & glam\nGel nails\nNail extensions\nFacials & skin\nManicure & pedicure\nNail art",
+				'default'     => "Facials & skin\nMicroneedling\nDermaplaning\nKorean glass skin\nSwedish massage\nDeep tissue\nLymphatic drainage\nPregnancy massage\nBody contouring\nCupping therapy\nGel nails\nNail extensions\nManicure & pedicure\nMakeup & glam\nBrows & lashes",
 				'description' => __( 'One treatment per line. The list is repeated automatically so the band never shows a gap.', 'divine-beauty' ),
 			)
 		);

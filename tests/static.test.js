@@ -50,12 +50,8 @@ const bad = (m) => { fail++; console.log('  FAIL ' + m); };
   await p.setViewportSize({ width: 1440, height: 950 });
 
   console.log('\n== imagery policy ==');
-  for (const page of ['index', 'services']) {
-    await p.goto(`${BASE}/${page}.html`, { waitUntil: 'networkidle' });
-    const srcs = await p.$$eval('img', els => els.map(e => e.getAttribute('src')));
-    const leaked = srcs.filter(s => /massage-benefits|cupping-back|facial-|nails-burgundy|glam-(portrait|studio)-poster|about\.jpg|g[1236]-/.test(s || ''));
-    leaked.length ? bad(`${page} still shows client photos: ${leaked.join(', ')}`) : ok(`${page} uses commissioned photography only`);
-  }
+  // The portfolio is the page a client reads as proof of the work, so it must
+  // never contain a licensed stock photograph. Home and services may use either.
   await p.goto(`${BASE}/portfolio.html`, { waitUntil: 'networkidle' });
   const pf = await p.$$eval('#work-grid img, .player video', els => els.map(e => e.getAttribute('src') || e.getAttribute('data-src') || e.getAttribute('poster')));
   const stock = pf.filter(s => /\/(hero|svc|band|studio)-[a-z-]+\.jpg$/.test(s || ''));
@@ -75,17 +71,17 @@ const bad = (m) => { fail++; console.log('  FAIL ' + m); };
   console.log('\n== portfolio filters ==');
   await p.goto(`${BASE}/portfolio.html`, { waitUntil: 'networkidle' });
   const total = await p.$$eval('.piece', e => e.length);
-  total === 7 ? ok(`7 pieces present`) : bad(`expected 7 pieces, found ${total}`);
+  total === 12 ? ok(`12 pieces present`) : bad(`expected 12 pieces, found ${total}`);
   await p.click('[data-filter="skin"]');
   await p.waitForTimeout(250);
   const shown = await p.$$eval('.piece:not([hidden])', e => e.length);
-  shown === 4 ? ok('skin filter shows 4') : bad(`skin filter shows ${shown}, expected 4`);
+  shown === 7 ? ok('skin filter shows 7') : bad(`skin filter shows ${shown}, expected 7`);
   const pressed = await p.$eval('[data-filter="skin"]', e => e.getAttribute('aria-pressed'));
   pressed === 'true' ? ok('filter marks itself pressed') : bad('filter aria-pressed not set');
   await p.click('[data-filter="all"]');
   await p.waitForTimeout(250);
   const back = await p.$$eval('.piece:not([hidden])', e => e.length);
-  back === 7 ? ok('all filter restores 7') : bad(`all filter shows ${back}`);
+  back === 12 ? ok('all filter restores 12') : bad(`all filter shows ${back}`);
 
   console.log('\n== lightbox ==');
   await p.click('.piece:not([hidden]) .piece-open');
@@ -95,7 +91,7 @@ const bad = (m) => { fail++; console.log('  FAIL ' + m); };
   const t1 = await p.$eval('#look-title', e => e.textContent.trim());
   t1 ? ok(`title populated: "${t1}"`) : bad('title empty');
   const counter = await p.$eval('#dialog-counter', e => e.textContent.trim());
-  /^\d+ \/ 7$/.test(counter) ? ok(`counter reads "${counter}"`) : bad(`counter reads "${counter}"`);
+  /^\d+ \/ 12$/.test(counter) ? ok(`counter reads "${counter}"`) : bad(`counter reads "${counter}"`);
   await p.click('#dialog-next');
   await p.waitForTimeout(300);
   const t2 = await p.$eval('#look-title', e => e.textContent.trim());

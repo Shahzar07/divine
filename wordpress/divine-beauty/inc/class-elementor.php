@@ -74,6 +74,7 @@ class Elementor_Support {
 	 * @return void
 	 */
 	public function register_widgets( $widgets_manager ): void {
+		require_once DIVINE_DIR . '/elementor/data-treatments.php';
 		require_once DIVINE_DIR . '/elementor/class-widget-base.php';
 
 		foreach ( self::WIDGETS as $widget ) {

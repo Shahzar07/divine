@@ -78,20 +78,12 @@ class Booking extends Divine_Widget {
 				'type'        => Controls_Manager::REPEATER,
 				'fields'      => $option->get_controls(),
 				'title_field' => '{{{ label }}}',
-				'default'     => array_map(
-					static fn( string $l ): array => array( 'label' => $l ),
-					array(
-						'Massage',
-						'Cupping Therapy',
-						'Makeup & Glam',
-						'Facials & Skin',
-						'Gel Nails',
-						'Nail Extensions',
-						'Nail Art & Detail',
-						'Manicure & Pedicure',
-						'Brow & Lash Finish',
-						"I'd like some guidance",
-					)
+				'default'     => array_merge(
+					array_map(
+						static fn( array $t ): array => array( 'label' => $t['name'] ),
+						divine_treatments()
+					),
+					array( array( 'label' => __( "I'd like some guidance", 'divine-beauty' ) ) )
 				),
 			)
 		);

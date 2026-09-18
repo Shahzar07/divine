@@ -66,15 +66,15 @@ const noise = (s) => /fonts\.(googleapis|gstatic)\.com|ERR_CERT_AUTHORITY_INVALI
   console.log('\n== portfolio ==');
   await p.goto(BASE + '/portfolio/', { waitUntil: 'networkidle' });
   const total = await p.$$eval('.piece', e => e.length);
-  total === 7 ? ok('7 pieces') : bad(`${total} pieces`);
+  total === 12 ? ok('12 pieces') : bad(`${total} pieces`);
   await p.click('[data-filter="skin"]'); await p.waitForTimeout(250);
   const shown = await p.$$eval('.piece:not([hidden])', e => e.length);
-  shown === 4 ? ok('skin filter shows 4') : bad(`skin filter shows ${shown}`);
+  shown === 7 ? ok('skin filter shows 7') : bad(`skin filter shows ${shown}`);
   await p.click('[data-filter="all"]'); await p.waitForTimeout(250);
   await p.click('.piece:not([hidden]) .piece-open'); await p.waitForTimeout(400);
   (await p.$eval('#look-dialog', e => e.open)) ? ok('lightbox opens') : bad('lightbox did not open');
   const c = await p.$eval('#dialog-counter', e => e.textContent.trim());
-  /^\d+ \/ 7$/.test(c) ? ok(`counter "${c}"`) : bad(`counter "${c}"`);
+  /^\d+ \/ 12$/.test(c) ? ok(`counter "${c}"`) : bad(`counter "${c}"`);
   const href = await p.$eval('#use-look', e => e.getAttribute('href'));
   /\?service=.+&look=.+#booking/.test(href) ? ok('CTA carries service + look') : bad(`CTA href ${href}`);
   await p.keyboard.press('Escape'); await p.waitForTimeout(250);
@@ -97,9 +97,27 @@ const noise = (s) => /fonts\.(googleapis|gstatic)\.com|ERR_CERT_AUTHORITY_INVALI
   const res = await p.$eval('#enquiry-result', e => ({ hidden: e.hidden, text: e.textContent.trim(), cls: e.className }));
   (!res.hidden && /is-ok/.test(res.cls)) ? ok(`form accepted: "${res.text.slice(0,58)}…"`) : bad(`form said: ${JSON.stringify(res)}`);
 
+  console.log('\n== the treatment menu ==');
+  await p.goto(BASE + '/services/', { waitUntil: 'networkidle' });
+  const menu = await p.evaluate(() => ({
+    groups: document.querySelectorAll('section[id="skin"], section[id="body"], section[id="nails"], section[id="glam"]').length,
+    cards: document.querySelectorAll('.card-grid .s-card[id]').length,
+    nailArt: /nail art/i.test(document.body.textContent),
+  }));
+  menu.groups === 4 ? ok('four treatment groups render') : bad(`${menu.groups} groups`);
+  menu.cards === 17 ? ok('all 17 treatments render') : bad(`${menu.cards} treatment cards`);
+  !menu.nailArt ? ok('nail art is gone') : bad('nail art still listed');
+
+  console.log('\n== footer has no stray widgets ==');
+  await p.goto(BASE + '/', { waitUntil: 'domcontentloaded' });
+  const stray = await p.evaluate(() =>
+    /uncategorized/i.test(document.querySelector('.site-footer')?.textContent || '')
+    || !!document.querySelector('.site-footer .widget_categories'));
+  !stray ? ok('no Categories / Uncategorized block') : bad('footer still shows a default widget');
+
   console.log('\n== service prefill from a Book now link ==');
   await p.goto(BASE + '/services/', { waitUntil: 'networkidle' });
-  const bookHref = await p.$eval('.svc .btn-gold', e => e.getAttribute('href'));
+  const bookHref = await p.$eval('.card-grid .s-card .btn-gold', e => e.getAttribute('href'));
   /service=/.test(bookHref) ? ok('services Book now carries the treatment') : bad(`href ${bookHref}`);
   await p.goto(BASE + '/?service=Gel%20Nails#booking', { waitUntil: 'networkidle' });
   const sel = await p.$eval('#service-select', e => e.value);
@@ -109,6 +127,8 @@ const noise = (s) => /fonts\.(googleapis|gstatic)\.com|ERR_CERT_AUTHORITY_INVALI
   await p.goto(BASE + '/', { waitUntil: 'domcontentloaded' });
   const tel = await p.$eval('.topbar-contact', e => e.getAttribute('href'));
   tel === 'tel:+447838063271' ? ok('phone converted to international form') : bad(`tel href ${tel}`);
+  const addr = await p.evaluate(() => document.body.textContent.includes('Hazel Grove, Stockport'));
+  addr ? ok('address reads Hazel Grove, Stockport') : bad('address not updated');
 
   console.log('\n== one h1 per page ==');
   for (const [name, path] of Object.entries(PAGES)) {

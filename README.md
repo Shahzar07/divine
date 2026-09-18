@@ -21,6 +21,10 @@ What is in this repository is exactly what gets served.
 ├── build.js                # Copies the site into dist/ for Hostinger's pipeline
 ├── dev.sh                  # Local preview + helper scripts
 ├── assets/                 # Photography, films, logo, emblem
+├── .data/treatments.py     # The treatment menu — the single source of truth
+├── tools/
+│   ├── generate.py         # Rebuilds the menu into both builds
+│   └── polish.py           # Address, footer links, anchor integrity
 ├── tests/                  # Playwright suites — see "Testing" below
 ├── wordpress/
 │   ├── divine-beauty/      # The WordPress + Elementor theme
@@ -134,6 +138,23 @@ appointment is ever auto-confirmed.
 `index.html?service=…#booking`, which preselects that treatment in the form.
 The portfolio lightbox additionally passes `&look=…` so the chosen piece of
 work is quoted in the enquiry.
+
+---
+
+## Changing the treatment menu
+
+The menu appears on the services page, in the home page carousel and in the
+enquiry dropdown. Rather than edit three places and hope they agree, edit
+`.data/treatments.py` and regenerate:
+
+```bash
+python3 tools/generate.py   # services page, home carousel, enquiry dropdown,
+                            # and the theme's Elementor defaults
+python3 tools/polish.py     # address, footer links; fails if an anchor dangles
+```
+
+Both scripts verify their own output — a bad splice or a link to a treatment
+that no longer exists stops the build rather than shipping.
 
 ---
 
