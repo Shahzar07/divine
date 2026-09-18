@@ -1,0 +1,23 @@
+/*
+Theme Name: Divine Beauty
+Theme URI: https://divinebeautybydee.com
+Author: Eagle Studio
+Author URI: https://divinebeautybydee.com
+Description: An editorial WordPress theme for Divine Beauty & Nails By Dee — a private beauty and wellbeing studio. Black, antique gold and ivory, built for Elementor: every section of every page is a Divine Beauty widget you can edit visually, with no code.
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.7
+Requires PHP: 7.4
+License: GNU General Public License v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: divine-beauty
+Domain Path: /languages
+Tags: elementor, beauty, salon, spa, one-column, custom-menu, custom-logo, featured-images, translation-ready
+*/
+
+/*
+ * The design system lives in assets/css/main.css and assets/css/layout.css,
+ * which functions.php enqueues. This file exists for the theme header above —
+ * WordPress requires it, and keeping it empty stops the two stylesheets from
+ * being loaded twice.
+ */

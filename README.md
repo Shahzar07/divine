@@ -12,27 +12,21 @@ What is in this repository is exactly what gets served.
 .
 ├── index.html              # Home
 ├── services.html           # Services — full treatment menu
-├── portfolio.html          # Portfolio — the studio's own work
+├── portfolio.html          # Portfolio — the studio's own work only
 ├── 404.html                # Styled not-found page (wired up in .htaccess)
 ├── style.css               # Design system + page sections
 ├── header.css              # Announcement bar, header, navigation, footer
-├── site.js                 # Navigation, carousels, films, filters, lightbox, enquiry form
+├── site.js                 # Navigation, carousels, films, filters, lightbox, enquiry
 ├── .htaccess               # Apache / LiteSpeed config for Hostinger
-├── dev.sh                  # Local preview + helper scripts (not needed to deploy)
-├── robots.txt              # Crawler rules  ← set your real domain
-├── sitemap.xml             # Sitemap        ← set your real domain
-├── assets/
-│   ├── logo.png                                    # Brand logo (also the favicon)
-│   ├── ganesha.jpg                                 # Blessing emblem in the hero
-│   ├── massage-benefits.jpg                        # Studio's own head-massage artwork
-│   ├── cupping-back.jpg                            # Cupping therapy result
-│   ├── facial-globes/-therapy/-detail/-glow.jpg    # Facial treatment + result
-│   ├── nails-burgundy.jpg                          # Gel nail work
-│   ├── glam-studio-film.mp4 / glam-portrait-film.mp4  + posters   # Client makeup looks
-│   ├── ritual-film.mp4 + ritual-poster.jpg         # Nail application film (Pexels)
-│   └── about.jpg, g1/g2/g3/g6-*.jpg                # Editorial mood photography
+├── build.js                # Copies the site into dist/ for Hostinger's pipeline
+├── dev.sh                  # Local preview + helper scripts
+├── assets/                 # Photography, films, logo, emblem
+├── tests/                  # Playwright suites — see "Testing" below
+├── wordpress/
+│   ├── divine-beauty/      # The WordPress + Elementor theme
+│   └── build-theme.sh      # Packages it as divine-beauty.zip
 ├── BRIEF.md                # Original design brief
-└── DELIVERY.md             # What was built, asset provenance, caveats
+└── DELIVERY.md             # What was built, imagery policy, verification
 ```
 
 All asset paths are **relative**, so the site works from a domain root, a
@@ -52,8 +46,9 @@ A few values are carried over or best-guess and should be checked by the studio:
 | Every page | `07838 063271` / `tel:+447838063271` | Carried from the studio's own head-massage artwork; confirm. |
 | `robots.txt`, `sitemap.xml`, `<link rel="canonical">` | `divinebeautybydee.com` | Replace with the live domain. |
 
-Testimonials on the home page are illustrative of the treatments offered.
-Replace them with real, attributed client reviews before launch.
+The home and services pages use licensed editorial photography; the portfolio
+uses the studio's own photographs only. Keep that split — the portfolio is the
+one page a client reads as proof of the work. See `DELIVERY.md`.
 
 ---
 
@@ -139,6 +134,46 @@ appointment is ever auto-confirmed.
 `index.html?service=…#booking`, which preselects that treatment in the form.
 The portfolio lightbox additionally passes `&look=…` so the chosen piece of
 work is quoted in the enquiry.
+
+---
+
+## The WordPress theme
+
+`wordpress/divine-beauty/` is the same site rebuilt as a WordPress theme in
+which **every section is an Elementor widget** — no code to edit anything.
+
+```bash
+./wordpress/build-theme.sh      # produces wordpress/divine-beauty.zip
+```
+
+Then, in WordPress: install and activate **Elementor** first, then
+*Appearance → Themes → Add New → Upload Theme →* the zip *→ Activate*.
+Activating it creates the Home, Services and Portfolio pages as real Elementor
+documents, sets the front page and fills the menus.
+
+Full guide: `wordpress/divine-beauty/README.md`.
+
+---
+
+## Testing
+
+Playwright suites live in `tests/`. They need a browser and a server:
+
+```bash
+npm install --no-save playwright          # PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 if Chromium is preinstalled
+python3 -m http.server 8000               # serve the static site
+node tests/static.test.js                 # 38 checks against http://127.0.0.1:8000
+```
+
+`tests/wordpress.test.js` (27 checks) and `tests/elementor.test.js` (8 checks)
+run against a WordPress install serving the theme on `http://127.0.0.1:8080`.
+
+Two notes for anyone re-running these:
+
+- `python3 -m http.server` answers a `Range` request with `200` instead of
+  `206`, so Chromium aborts video streams. The suites filter that out; real
+  hosting returns `206` and the films play.
+- Google Fonts is blocked by some sandboxed networks. That is filtered too.
 
 ---
 
