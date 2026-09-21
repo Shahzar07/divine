@@ -172,7 +172,10 @@ def home_cards() -> str:
               <h3>{esc(name)}</h3>
               <div class="tag-row">{tags}</div>
               <p>{esc(short)}</p>
-              <a class="link-more" href="services.html#{slug}">Learn more <span aria-hidden="true">&#8599;</span></a>
+              <div class="s-card-actions">
+                <a class="btn btn-gold btn-sm" href="{booking(name)}">Book now <span aria-hidden="true">&#8599;</span></a>
+                <a class="link-more" href="services.html#{slug}">Learn more <span aria-hidden="true">&#8599;</span></a>
+              </div>
             </div>
           </article>''')
     return '\n'.join(cards)

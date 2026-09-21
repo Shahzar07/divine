@@ -23,12 +23,14 @@ require_once DIVINE_DIR . '/inc/class-nav-walker.php';
 require_once DIVINE_DIR . '/inc/class-theme-setup.php';
 require_once DIVINE_DIR . '/inc/class-assets.php';
 require_once DIVINE_DIR . '/inc/class-customizer.php';
+require_once DIVINE_DIR . '/inc/class-appointments.php';
 require_once DIVINE_DIR . '/inc/class-enquiry.php';
 require_once DIVINE_DIR . '/inc/class-starter-content.php';
 
 new DivineBeauty\Theme_Setup();
 new DivineBeauty\Assets();
 new DivineBeauty\Customizer();
+new DivineBeauty\Appointments();
 new DivineBeauty\Enquiry();
 new DivineBeauty\Starter_Content();
 

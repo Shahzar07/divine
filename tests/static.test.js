@@ -107,6 +107,37 @@ const bad = (m) => { fail++; console.log('  FAIL ' + m); };
   const closed = await p.$eval('#look-dialog', e => !e.open);
   closed ? ok('escape closes dialog') : bad('escape did not close');
 
+  console.log('\n== lightbox position and scroll ==');
+  await p.addStyleTag({ content: 'html{scroll-behavior:auto !important}' });
+  await p.evaluate(() => window.scrollTo(0, 2500));
+  await p.waitForTimeout(400);
+  const lb0 = await p.evaluate(() => ({
+    y: window.scrollY,
+    // Measure a section rather than the card itself: the clicked card lifts 4px
+    // by design under :focus-visible, which is not the page moving.
+    mark: Math.round(document.querySelector('#work').getBoundingClientRect().top),
+  }));
+  await p.evaluate(() => document.querySelector('.piece .piece-open').click());
+  await p.waitForTimeout(400);
+  const lb1 = await p.evaluate(() => {
+    const r = document.getElementById('look-dialog').getBoundingClientRect();
+    return {
+      centred: Math.abs(r.left - (innerWidth - r.width) / 2) < 4
+            && Math.abs(r.top - (innerHeight - r.height) / 2) < 4,
+      mark: Math.round(document.querySelector('#work').getBoundingClientRect().top),
+      frozen: document.body.style.top,
+    };
+  });
+  lb1.centred ? ok('modal opens centred in the viewport') : bad('modal is not centred');
+  lb1.mark === lb0.mark ? ok('page does not move when the modal opens')
+                        : bad(`page shifted ${lb1.mark - lb0.mark}px on open`);
+  lb1.frozen === `-${lb0.y}px` ? ok(`body frozen at the reading position (${lb1.frozen})`)
+                               : bad(`body frozen at ${lb1.frozen}, expected -${lb0.y}px`);
+  await p.keyboard.press('Escape');
+  await p.waitForTimeout(400);
+  const lb2 = await p.evaluate(() => window.scrollY);
+  lb2 === lb0.y ? ok('scroll restored exactly on close') : bad(`scroll ${lb0.y} -> ${lb2}`);
+
   console.log('\n== whatsapp button ==');
   for (const page of PAGES) {
     await p.goto(`${BASE}/${page}.html`, { waitUntil: 'domcontentloaded' });

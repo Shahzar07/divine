@@ -217,8 +217,7 @@ class Service_List extends Divine_Widget {
 		$s        = $this->get_settings_for_display();
 		$groups   = (array) $s['groups'];
 		$services = (array) $s['services'];
-		$booking  = $s['booking_url']['url'] ?? '/#booking';
-		$joiner   = str_contains( (string) $booking, '?' ) ? '&' : '?';
+		$booking  = (string) ( $s['booking_url']['url'] ?? '/#booking' );
 
 		// Only offer a jump link for a group that has treatments in it.
 		$used = array();
@@ -286,7 +285,7 @@ class Service_List extends Divine_Widget {
 									<?php endif; ?>
 
 									<a class="btn btn-gold btn-sm"
-										href="<?php echo esc_url( $booking . $joiner . 'service=' . rawurlencode( (string) $svc['name'] ) ); ?>">
+										href="<?php echo esc_url( $this->booking_link( $booking, array( 'service' => (string) $svc['name'] ) ) ); ?>">
 										<?php esc_html_e( 'Book now', 'divine-beauty' ); ?> <span aria-hidden="true">&#8599;</span>
 									</a>
 								</div>

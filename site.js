@@ -12,6 +12,41 @@
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const scrollBehavior = () => (reduceMotion.matches ? 'auto' : 'smooth');
 
+  /* ----------------------------------------------------------- scroll lock */
+  /* The body is a scroll container (it carries `overflow-x: hidden`), so simply
+     hiding its overflow while a modal is open throws the reader back to the top
+     of the page. Freezing the body at a negative offset holds their place, and
+     closing restores it exactly. A depth counter keeps the drawer and a dialog
+     from unlocking each other. */
+  let lockDepth = 0;
+  let lockedAt = 0;
+
+  const lockScroll = () => {
+    if (lockDepth++ > 0) return;
+    lockedAt = window.scrollY;
+    // Freezing the body removes the scrollbar, which widens the layout and
+    // reflows the page underneath the modal. Hold the width with padding.
+    const gutter = window.innerWidth - document.documentElement.clientWidth;
+    if (gutter > 0) document.body.style.paddingRight = `${gutter}px`;
+    document.body.style.top = `-${lockedAt}px`;
+    document.body.classList.add('scroll-locked');
+  };
+
+  const unlockScroll = () => {
+    if (lockDepth === 0 || --lockDepth > 0) return;
+    document.body.classList.remove('scroll-locked');
+    document.body.style.top = '';
+    document.body.style.paddingRight = '';
+    // `html` has `scroll-behavior: smooth`, which would animate the restore
+    // and leave the reader watching the page glide back. Jump instead.
+    const root = document.documentElement;
+    const previous = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto';
+    window.scrollTo(0, lockedAt);
+    root.style.scrollBehavior = previous;
+  };
+
+
   /* ---------------------------------------------------------------- year -- */
   const year = $('#year');
   if (year) year.textContent = String(new Date().getFullYear());
@@ -31,7 +66,10 @@
 
   if (nav && navToggle) {
     const setNav = (open) => {
+      const wasOpen = document.body.classList.contains('nav-open');
       document.body.classList.toggle('nav-open', open);
+      if (open && !wasOpen) lockScroll();
+      if (!open && wasOpen) unlockScroll();
       navToggle.setAttribute('aria-expanded', String(open));
       navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
       if (navScrim) navScrim.hidden = !open;
@@ -272,12 +310,14 @@
   /* ------------------------------------------------------------- dialogs -- */
   const openDialog = (dialog) => {
     if (!dialog) return;
+    // Lock first: showModal() itself resets the page scroll, so capturing the
+    // position afterwards records zero and the reader loses their place.
+    lockScroll();
     dialog.showModal();
-    document.body.classList.add('modal-open');
   };
 
   $$('dialog').forEach((dialog) => {
-    dialog.addEventListener('close', () => document.body.classList.remove('modal-open'));
+    dialog.addEventListener('close', () => unlockScroll());
     const close = $('.dialog-close', dialog);
     if (close) close.addEventListener('click', () => dialog.close());
     // Clicking the backdrop (outside the dialog box) closes it.

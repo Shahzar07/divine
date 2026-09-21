@@ -112,6 +112,17 @@ class Service_Carousel extends Divine_Widget {
 		);
 
 		$this->add_control(
+			'booking_url',
+			array(
+				'label'       => __( 'Enquiry page', 'divine-beauty' ),
+				'type'        => Controls_Manager::URL,
+				'default'     => array( 'url' => '/#booking' ),
+				'description' => __( 'Each card\'s Book now adds its treatment name to this link.', 'divine-beauty' ),
+				'separator'   => 'before',
+			)
+		);
+
+		$this->add_control(
 			'cta_text',
 			array(
 				'label'     => __( 'Button below the rail', 'divine-beauty' ),
@@ -165,7 +176,8 @@ class Service_Carousel extends Divine_Widget {
 	}
 
 	protected function render(): void {
-		$s = $this->get_settings_for_display();
+		$s       = $this->get_settings_for_display();
+		$booking = (string) ( $s['booking_url']['url'] ?? '/#booking' );
 		?>
 		<section class="section" id="services">
 			<div class="wrap">
@@ -203,11 +215,17 @@ class Service_Carousel extends Divine_Widget {
 										</div>
 									<?php endif; ?>
 									<p><?php echo esc_html( $item['text'] ); ?></p>
-									<?php if ( ! empty( $item['link']['url'] ) ) : ?>
-										<a class="link-more" href="<?php echo esc_url( $item['link']['url'] ); ?>">
-											<?php esc_html_e( 'Learn more', 'divine-beauty' ); ?> <span aria-hidden="true">&#8599;</span>
+									<div class="s-card-actions">
+										<a class="btn btn-gold btn-sm"
+											href="<?php echo esc_url( $this->booking_link( $booking, array( 'service' => (string) $item['title'] ) ) ); ?>">
+											<?php esc_html_e( 'Book now', 'divine-beauty' ); ?> <span aria-hidden="true">&#8599;</span>
 										</a>
-									<?php endif; ?>
+										<?php if ( ! empty( $item['link']['url'] ) ) : ?>
+											<a class="link-more" href="<?php echo esc_url( $item['link']['url'] ); ?>">
+												<?php esc_html_e( 'Learn more', 'divine-beauty' ); ?> <span aria-hidden="true">&#8599;</span>
+											</a>
+										<?php endif; ?>
+									</div>
 								</div>
 							</article>
 						<?php endforeach; ?>

@@ -69,6 +69,25 @@ class Enquiry {
 			wp_send_json_error( array( 'message' => __( 'Please check your email address so Dee can reply.', 'divine-beauty' ) ), 400 );
 		}
 
+		/*
+		 * Store first, send second. Mail can fail for reasons that have nothing
+		 * to do with the visitor — a host with no mailer, a provider throttling
+		 * — and an enquiry that only ever existed as an email is an enquiry the
+		 * studio loses. The record in Appointments is the source of truth.
+		 */
+		$appointment = Appointments::store(
+			array(
+				'name'    => $name,
+				'email'   => $email,
+				'phone'   => $phone,
+				'service' => $service,
+				'date'    => $date,
+				'look'    => $look,
+				'message' => $message,
+				'source'  => wp_get_referer() ?: home_url( '/' ),
+			)
+		);
+
 		$to = Customizer::get( 'email' );
 		if ( ! is_email( $to ) ) {
 			$to = get_option( 'admin_email' );
@@ -94,6 +113,11 @@ class Enquiry {
 			$lines[] = '';
 			$lines[] = $message;
 		}
+		if ( $appointment ) {
+			$lines[] = '';
+			$lines[] = __( 'Open it in your dashboard:', 'divine-beauty' );
+			$lines[] = (string) get_edit_post_link( $appointment, 'raw' );
+		}
 
 		$sent = wp_mail(
 			$to,
@@ -110,13 +134,18 @@ class Enquiry {
 			)
 		);
 
-		if ( ! $sent ) {
+		if ( ! $sent && ! $appointment ) {
 			wp_send_json_error(
 				array(
 					'message' => __( 'The enquiry could not be sent just now. Please call or WhatsApp the studio.', 'divine-beauty' ),
 				),
 				500
 			);
+		}
+
+		if ( ! $sent ) {
+			// It is saved and will be seen; only the notification failed.
+			update_post_meta( $appointment, '_divine_mail_failed', '1' );
 		}
 
 		$this->record_send();

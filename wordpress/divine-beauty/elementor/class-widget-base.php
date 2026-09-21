@@ -192,6 +192,38 @@ abstract class Divine_Widget extends Widget_Base {
 	}
 
 	/**
+	 * Build a booking link that carries the treatment.
+	 *
+	 * The enquiry destination is normally written as `/#booking`, so appending
+	 * a query string naively produces `/#booking?service=…` — the parameters
+	 * land inside the fragment and the form never sees them. Split the fragment
+	 * off, add the query, then put the fragment back where it belongs.
+	 *
+	 * @param string                $base   Enquiry URL, possibly with a fragment.
+	 * @param array<string,string>  $params Query parameters to add.
+	 * @return string
+	 */
+	protected function booking_link( string $base, array $params ): string {
+		$base = '' !== trim( $base ) ? $base : '/#booking';
+
+		$hash = '';
+		if ( str_contains( $base, '#' ) ) {
+			list( $base, $hash ) = explode( '#', $base, 2 );
+			$hash = '#' . $hash;
+		}
+
+		$params = array_filter( $params, static fn( $v ): bool => '' !== (string) $v );
+		if ( ! $params ) {
+			return $base . $hash;
+		}
+
+		$query = http_build_query( $params, '', '&', PHP_QUERY_RFC3986 );
+		$base .= ( str_contains( $base, '?' ) ? '&' : '?' ) . $query;
+
+		return $base . $hash;
+	}
+
+	/**
 	 * Print an image from a media control, falling back to a bundled asset.
 	 *
 	 * @param array<string,mixed> $media    Elementor media control value.

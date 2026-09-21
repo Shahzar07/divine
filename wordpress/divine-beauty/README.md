@@ -68,16 +68,44 @@ one is set.
 
 ---
 
-## How enquiries reach the studio
+## Appointments
 
-The form posts to WordPress, which emails the address set in *Studio details*.
-It is rate-limited to five enquiries an hour per visitor and carries a honeypot
-field, so ordinary spam does not get through. Replies go straight to the
-visitor's own address.
+Every enquiry the website receives is **saved into WordPress** and appears under
+**Appointments** in the admin menu, with a count of the new ones beside it.
 
-If enquiries are not arriving, the host's `wp_mail()` is usually the cause —
-install an SMTP plugin and send through the studio's real mailbox. That also
-stops the messages landing in spam.
+The list shows the client, the treatment, their preferred date, their contact
+details, the status and when it arrived. It can be filtered by status, sorted by
+treatment or date, searched, and exported to a spreadsheet with **Export all
+appointments (CSV)**.
+
+Opening one shows everything the client sent, a **Reply to this client** button
+that drafts an email to them, and a **Status** you set as you work through it:
+
+> New → Contacted → Confirmed → Completed, or Cancelled
+
+The status is for the studio's own tracking. Changing it does not notify anyone.
+
+### How a booking arrives
+
+Every treatment — on the services page and in the home page carousel — has a
+**Book now** button. It sends the visitor to the enquiry form with that
+treatment already chosen, so they only fill in their own details. Opening a
+piece in the portfolio and pressing *Enquire about this* does the same and
+carries the look across too.
+
+When they submit, the enquiry is **stored first and emailed second**. Mail can
+fail for reasons that have nothing to do with the visitor — a host with no
+mailer, a provider throttling — and an enquiry that only ever existed as an
+email is an enquiry you lose. The record in Appointments is the source of truth;
+the email is a notification.
+
+The form is rate-limited to five enquiries an hour per visitor and carries a
+honeypot field, so ordinary spam does not get through. Replies go straight to
+the visitor's own address.
+
+If the notification emails are not arriving (the appointments will still be
+saved), the host's `wp_mail()` is usually the cause — install an SMTP plugin and
+send through the studio's real mailbox. That also keeps them out of spam.
 
 ---
 
@@ -113,7 +141,8 @@ divine-beauty/
 │   ├── class-assets.php         Stylesheets and scripts
 │   ├── class-customizer.php     Studio details
 │   ├── class-nav-walker.php     Menu markup that matches the design
-│   ├── class-enquiry.php        Enquiry validation, rate limiting and mail
+│   ├── class-appointments.php   The Appointments record, list, detail and export
+│   ├── class-enquiry.php        Enquiry validation, rate limiting, storing and mail
 │   ├── class-elementor.php      Widget category and registration
 │   └── class-starter-content.php  Builds the site on activation
 ├── elementor/

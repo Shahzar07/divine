@@ -76,7 +76,16 @@ body {
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
 }
-body.nav-open, body.modal-open { overflow: hidden; }
+/* `body` is a scroll container here (it carries `overflow-x: hidden`), so
+   switching its `overflow` to hidden throws the scroll position back to the
+   top. Instead the body is frozen in place at a negative offset that site.js
+   sets from the current scroll position, and restores on close. */
+body.scroll-locked {
+  position: fixed;
+  inset-inline: 0;
+  width: 100%;
+  overflow-y: hidden;
+}
 
 /* Author `display` rules outrank the UA `[hidden]` rule, so enforce it once. */
 [hidden] { display: none !important; }
@@ -734,6 +743,16 @@ p { text-wrap: pretty; }
 .s-card-body h3 { margin-bottom: 10px; }
 .s-card-body p { margin-bottom: 18px; color: var(--muted); font-size: 15px; line-height: 1.7; }
 .on-paper .s-card-body p { color: var(--paper-muted); }
+/* A treatment card offers both: book it, or read about it first. */
+.s-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  margin-top: auto;
+  padding-top: 18px;
+}
+.s-card-actions .link-more { margin-top: 0; }
 .s-card .link-more { margin-top: auto; align-self: flex-start; }
 .tag-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
 .tag {
@@ -1394,6 +1413,10 @@ p { text-wrap: pretty; }
 
 /* --------------------------------------------------------------- dialogs -- */
 dialog {
+  /* The reset above sets `* { margin: 0 }`, which beats the user-agent's
+     `dialog:modal { margin: auto }` and pins the modal to the viewport's
+     top-left corner. Restore the centring explicitly. */
+  margin: auto;
   width: min(1020px, calc(100vw - 32px));
   max-height: calc(100dvh - 40px);
   padding: 0;

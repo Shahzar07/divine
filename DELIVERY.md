@@ -9,84 +9,47 @@ Two things ship from this repository:
 
 ---
 
-## What changed in this round (menu expansion)
+## What changed in this round (bookings)
 
-### The treatment menu — 17 treatments, grouped
+### Appointments — enquiries now live in WordPress
 
-Nail art was removed. Six named facials and five named massages were added, and
-the two generic "Massage" and "Facials & Skin" entries were replaced by the
-specific treatments that now sit under them:
+Every enquiry the website receives is stored as a record and appears under
+**Appointments** in the admin menu, with a count of the new ones beside it.
 
-| Group | Treatments |
-|---|---|
-| **Facials & skin** | Basic Facial · Luxury Facial · Dermaplaning · Microneedling · Korean Glass Skin · Microdermabrasion Facial |
-| **Massage & body** | Swedish · Deep Tissue · Lymphatic Drainage · Pregnancy Massage · Manual Body Contouring · Cupping Therapy |
-| **Nails** | Gel Nails · Nail Extensions · Manicure & Pedicure |
-| **Makeup & finishing** | Makeup & Glam · Brow & Lash Finish |
+- List: client, treatment, preferred date, contact, status, received. Filter by
+  status, sort by treatment or date, search, and **Export to CSV**.
+- Detail: everything the client sent, a **Reply to this client** button, and a
+  status — New → Contacted → Confirmed → Completed, or Cancelled.
 
-Seventeen alternating full-width blocks would have made the services page an
-enormous scroll, so the page is now **grouped into four sections with a card
-grid**, each card carrying its own description, benefits and *Book now*. A
-jump-to row sits above it.
+The enquiry is **stored first and emailed second**. Mail fails for reasons that
+have nothing to do with the visitor — a host with no mailer, a provider
+throttling — and an enquiry that only ever existed as an email is an enquiry the
+studio loses. The record is the source of truth; the email is a notification. If
+the email fails the appointment is still saved, and the visitor is still told it
+went through, because it did.
 
-### One source of truth for the menu
+> Note: the **static build has no database**, so its form still hands the visitor
+> an email draft. The Appointments dashboard exists only in the WordPress theme.
 
-The menu appears in three places that must agree — the services page, the home
-carousel and the enquiry dropdown — so they are now **generated** from
-`.data/treatments.py`:
+### Book now on every treatment
 
-```bash
-python3 tools/generate.py   # rewrites both builds from the menu
-python3 tools/polish.py     # address, footer links, anchors; verifies nothing dangles
-```
+All seventeen treatments carry a Book now — on the services page and now on the
+home page carousel too. It lands on the enquiry form with that treatment already
+selected.
 
-`tools/generate.py` also writes `wordpress/divine-beauty/elementor/data-treatments.php`,
-which the Elementor widgets read for their defaults. The static site and the
-theme cannot drift apart.
+### The portfolio popup
 
-### Your own photography, used where it is the better picture
+Two separate faults, both fixed:
 
-Six images were supplied and all six are in use:
-
-| Image | Where |
-|---|---|
-| Dee working in the studio | Home page — the "More than an appointment" section |
-| Body contouring, before & after | Portfolio, and the Manual Body Contouring card |
-| Body contouring, waist | Portfolio |
-| Microneedling in progress | Portfolio, and the Microneedling card |
-| Post-treatment glow ×2 | Portfolio |
-
-The earlier rule was "stock on home and services, your photographs only in the
-portfolio". That rule existed because the photographs then available read as
-amateur — it was really a quality rule wearing a provenance badge. These are
-good, specific photographs, so the rule is now what it should always have been:
-**use the best image for the job, and keep the portfolio exclusively yours.**
-
-The photograph of you at work is a stronger trust signal than any stock
-treatment room, which is why it now leads the home page.
-
-Nine further licensed images were sourced for the treatments with no photograph
-yet: dermaplaning, glass skin, microdermabrasion, Swedish, deep tissue,
-lymphatic drainage and pregnancy massage. Swap any of them out in Elementor as
-you photograph your own.
-
-### Portfolio: 7 → 12 pieces
-
-Five additions, all your own work: two body-contouring results, microneedling in
-progress and two post-treatment glow shots. Filter counts update automatically.
-
-### Address
-
-Now **Hazel Grove, Stockport** everywhere — both builds and the Customizer
-default.
-
-### The footer "Categories / Uncategorized" block
-
-That was WordPress's own doing: it drops its stock widgets into the first
-registered sidebar on a new install, and the theme had registered a footer
-widget area. The footer is a designed layout rather than a widget zone, so the
-sidebar was **removed entirely** — which fixes it at the source rather than
-hiding it.
+1. **It opened at the top-left of the screen.** The stylesheet's
+   `* { margin: 0 }` reset beats the browser's own `dialog:modal { margin: auto }`,
+   so the modal lost its centring. Restored explicitly.
+2. **It threw the reader back to the top of the page.** `body` is a scroll
+   container here (it carries `overflow-x: hidden`), so switching its `overflow`
+   to hidden resets the scroll position. The page is now frozen in place at a
+   negative offset taken from the current scroll position and restored exactly on
+   close — and the lock is taken *before* `showModal()`, because `showModal()`
+   itself resets the scroll, so capturing afterwards recorded zero.
 
 ---
 
@@ -113,7 +76,7 @@ Build the installable zip with `wordpress/build-theme.sh`.
 
 Everything below was run, not assumed.
 
-**Static site — 36 checks, all passing** (`tests/static.test.js`)
+**Static site — 40 checks, all passing** (`tests/static.test.js`)
 No console errors or failed requests; no horizontal overflow across 4 pages ×
 6 widths; every image decodes and has alt text; the imagery policy holds on all
 three pages; portfolio filters and counts; lightbox open/next/previous/Escape
@@ -121,7 +84,7 @@ and the CTA carrying service + look; the WhatsApp link on every page; booking
 prefill from `?service=`/`?look=`; mobile drawer open and Escape; one `<h1>` per
 page.
 
-**WordPress theme — 32 checks, all passing** (`tests/wordpress.test.js`)
+**WordPress theme — 36 checks, all passing** (`tests/wordpress.test.js`)
 Run against a real WordPress 6.x on PHP 8.4 with Elementor installed. All three
 pages return 200 with no PHP notices in the output; no console errors; no
 overflow across 3 pages × 6 widths; every framed image fills its frame; the menu
@@ -135,10 +98,16 @@ Admin sign-in; the setup screen under Appearance; the "Studio details"
 Customiser section; the editor opens the Home page; the widget panel lists the
 Divine Beauty widgets; the preview renders all 14; no editor JavaScript errors.
 
-A third suite, `tests/elementor-id-collisions.php`, checks that no widget
-gives a controls section the same id as a control.
+**Bookings — 20 checks, all passing** (`tests/appointments.test.js`)
+A Book now link carries its treatment; following it preselects the dropdown and
+scrolls to the form; the form submits; the appointment appears in the admin with
+the client, treatment, date, contact and a New status; every field is stored;
+the status can be changed and sticks; and the CSV export downloads containing it.
 
-Three bugs were found this way and fixed:
+`tests/elementor-id-collisions.php` checks that no widget gives a controls
+section the same id as a control.
+
+Five bugs were found this way and fixed:
 
 1. Elementor ships `.elementor img { height: auto }` at the same specificity as
    the theme's `.frame img { height: 100% }`, and its stylesheet loads later — so
@@ -152,6 +121,11 @@ Three bugs were found this way and fixed:
    called `groups` *and* a repeater called `groups`. The section silently won
    and the repeater defaulted to null. The section was renamed, and
    `tests/elementor-id-collisions.php` now guards every widget against it.
+4. Book now produced `/#booking?service=…` — the query string landed *inside*
+   the fragment, so the form never saw it and nothing preselected. The widgets
+   now build the link through one helper that splits the fragment off first.
+5. The scroll lock was taken after `showModal()`, which has already reset the
+   scroll, so it recorded zero and the reader still lost their place.
 
 ---
 
